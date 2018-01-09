@@ -6,6 +6,7 @@ from scrapy.http import Request
 import json
 import re
 import time
+from zhihuspider.items import ZhihuspiderItem
 
 
 class zhihuspider(CrawlSpider):
@@ -35,9 +36,12 @@ class zhihuspider(CrawlSpider):
 
     def parse(self, response):
         data = json.loads(response.body)['data']
-        print(data)
         for each in data:
-            print(each['excerpt'], '\n')
+            # print(each['excerpt'], '\n')
+            item = ZhihuspiderItem()
+            item['author'] = each['author']['name']
+            item['comment'] = each['excerpt']
+            yield item
         next_url = re.sub('offset=(.*?)&', 'offset=' + str(self.offset) + '&', self.start_urls[0])
         self.offset += 20
         print(next_url)
